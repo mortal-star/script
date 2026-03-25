@@ -135,7 +135,13 @@ class GLaDOSAutoCheckin:
                 if isinstance(first_item, dict):
                     balance = first_item.get("balance", "未知")
 
-            if code == 1 and "Repeats" in message:
+            normalized_message = message.lower()
+
+            if code == 1 and (
+                "repeats" in normalized_message
+                or "return tomorrow" in normalized_message
+                or "logged" in normalized_message
+            ):
                 print(f"{self.log_prefix()} 今日已经签到: {message}")
                 print(f"{self.log_prefix()} 当前积分: {balance}")
                 return True
@@ -211,3 +217,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
