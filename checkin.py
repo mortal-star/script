@@ -1,4 +1,4 @@
-﻿import json
+import json
 import os
 import time
 from datetime import datetime
@@ -128,7 +128,12 @@ class GLaDOSAutoCheckin:
             code = result.get("code")
             message = result.get("message", "未知")
             points = result.get("points", 0)
-            balance = result.get("list", [{}])[0].get("balance", "未知")
+            balance_list = result.get("list") or []
+            balance = "未知"
+            if isinstance(balance_list, list) and balance_list:
+                first_item = balance_list[0]
+                if isinstance(first_item, dict):
+                    balance = first_item.get("balance", "未知")
 
             if code == 1 and "Repeats" in message:
                 print(f"{self.log_prefix()} 今日已经签到: {message}")
@@ -142,6 +147,7 @@ class GLaDOSAutoCheckin:
                 return True
 
             print(f"{self.log_prefix()} 签到失败: {message} (code={code})")
+            print(f"{self.log_prefix()} 接口返回: {result}")
             return False
         except json.JSONDecodeError:
             print(f"{self.log_prefix()} 解析签到响应失败，非合法 JSON")
